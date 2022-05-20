@@ -6,4 +6,5 @@
     <string name="Reset">重画</string>
     <string name="Save">保存</string>
     <string name="rubber">橡皮擦</string>
+    <string name="reset">撤销</string>
 </resources>

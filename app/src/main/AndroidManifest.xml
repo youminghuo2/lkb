@@ -12,12 +12,8 @@
         android:theme="@style/Theme.Lkb">
         <activity
             android:name=".WhiteBoardActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:screenOrientation="landscape"
+            android:exported="false" >
         </activity>
         <activity
             android:name=".MainActivity"
@@ -32,7 +28,7 @@
         <service
             android:name=".ScreenRecorderService"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:foregroundServiceType="mediaProjection" />
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

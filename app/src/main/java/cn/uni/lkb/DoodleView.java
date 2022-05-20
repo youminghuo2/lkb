@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -41,6 +43,8 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
 
     private ActionType mActionType = ActionType.Path;
 
+    private boolean is_Img=false;
+
     public DoodleView(Context context) {
         super(context);
         init();
@@ -58,20 +62,25 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void init() {
         mSurfaceHolder = this.getHolder();
+        mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
         mSurfaceHolder.addCallback(this);
         this.setFocusable(true);
 
         mPaint = new Paint();
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLACK);
         mPaint.setStrokeWidth(currentSize);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        Canvas canvas = mSurfaceHolder.lockCanvas();
-        canvas.drawColor(Color.WHITE);
-        mSurfaceHolder.unlockCanvasAndPost(canvas);
+//        Canvas canvas = mSurfaceHolder.lockCanvas();
+//        canvas.drawColor(Color.WHITE);
+//        mSurfaceHolder.unlockCanvasAndPost(canvas);
         mBaseActions = new ArrayList<>();
+    }
+
+    private void setColor(boolean img){
+        this.is_Img=img;
     }
 
     @Override
@@ -100,7 +109,9 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
                 break;
             case MotionEvent.ACTION_MOVE:
                 Canvas canvas = mSurfaceHolder.lockCanvas();
-                canvas.drawColor(Color.WHITE);
+                if (!is_Img){
+                    canvas.drawColor(Color.WHITE);
+                }
                 for (BaseAction baseAction : mBaseActions) {
                     baseAction.draw(canvas);
                 }

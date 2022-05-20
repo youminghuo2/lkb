@@ -25,4 +25,8 @@
         android:id="@+id/rubber_bt"
         android:title="@string/rubber" />
 
+    <item
+        android:id="@+id/reset_bt"
+        android:title="@string/reset"></item>
+
 </menu>

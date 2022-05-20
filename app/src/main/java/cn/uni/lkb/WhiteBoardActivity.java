@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import cn.uni.lkb.databinding.ActivityMainBinding;
 import cn.uni.lkb.databinding.ActivityWhiteBoardBinding;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
@@ -31,6 +30,8 @@ public class WhiteBoardActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         mDoodleView=binding.doodleDoodleview;
+
+        mDoodleView.setZOrderOnTop(true);
         binding.doodleDoodleview.setSize(dip2px(5));
 
     }
@@ -68,6 +69,9 @@ public class WhiteBoardActivity extends AppCompatActivity {
                 break;
             case R.id.rubber_bt:
                 mDoodleView.setColor("#ffffff");
+                break;
+            case R.id.reset_bt:
+                mDoodleView.back();
                 break;
         }
         return true;
