@@ -31,7 +31,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
         setContentView(view);
         mDoodleView=binding.doodleDoodleview;
 
-        mDoodleView.setZOrderOnTop(true);
+//        mDoodleView.setZOrderOnTop(true);
         binding.doodleDoodleview.setSize(dip2px(5));
 
     }
