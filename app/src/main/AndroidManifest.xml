@@ -12,7 +12,6 @@
         android:theme="@style/Theme.Lkb">
         <activity
             android:name=".WhiteBoardActivity"
-            android:screenOrientation="landscape"
             android:exported="false" >
         </activity>
         <activity
