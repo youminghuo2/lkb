@@ -66,40 +66,35 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private void init() {
-
-
         mSurfaceHolder = this.getHolder();
         mSurfaceHolder.addCallback(this);
 
-        mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        this.setZOrderOnTop(true);
-
+//        mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
+//        this.setZOrderOnTop(true);
         this.setFocusable(true);
 
         mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(Color.WHITE);
         mPaint.setStrokeWidth(currentSize);
-
     }
-
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-//        Canvas canvas = mSurfaceHolder.lockCanvas();
-//        canvas.drawColor(Color.WHITE);
-//        mSurfaceHolder.unlockCanvasAndPost(canvas);
-        canvas=mSurfaceHolder.lockCanvas();
-        PaintFlagsDrawFilter pfd= new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
-        canvas.setDrawFilter(pfd);//解决缩放后图片字体模糊的问题
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.aa);
-//				设置缩放比
-        Matrix matrix = new Matrix();
-        matrix.setScale(55, 50);
-        mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(currentSize);
-        canvas.drawBitmap(bitmap, matrix, mPaint);
+        Canvas canvas = mSurfaceHolder.lockCanvas();
+        canvas.drawColor(Color.WHITE);
         mSurfaceHolder.unlockCanvasAndPost(canvas);
+//        canvas=mSurfaceHolder.lockCanvas();
+//        PaintFlagsDrawFilter pfd= new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
+//        canvas.setDrawFilter(pfd);//解决缩放后图片字体模糊的问题
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.aa);
+////				设置缩放比
+//        Matrix matrix = new Matrix();
+//        matrix.setScale(55, 50);
+//        mPaint = new Paint();
+//        mPaint.setColor(Color.BLACK);
+//        mPaint.setStrokeWidth(currentSize);
+//        canvas.drawBitmap(bitmap, matrix, mPaint);
+//        mSurfaceHolder.unlockCanvasAndPost(canvas);
 
         mBaseActions = new ArrayList<>();
     }
@@ -134,6 +129,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
                 break;
             case MotionEvent.ACTION_MOVE:
                  canvas = mSurfaceHolder.lockCanvas();
+                canvas.drawColor(Color.WHITE);
 //                if (!is_Img){
 //                    canvas.drawColor(Color.WHITE);
 //                }
@@ -273,7 +269,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback{
      * @param canvas
      */
     private void doDraw(Canvas canvas) {
-
+        canvas.drawColor(Color.WHITE);
         for (BaseAction action : mBaseActions) {
             action.draw(canvas);
         }
