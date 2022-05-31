@@ -31,14 +31,17 @@ public class WhiteBoardActivity extends AppCompatActivity {
         setContentView(view);
         mDoodleView=binding.doodleDoodleview;
 
-        mDoodleView.setZOrderOnTop(true);
+
         binding.doodleDoodleview.setSize(dip2px(5));
 
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mDoodleView.onTouchEvent(event);
+        if (mDoodleView.getVisibility()==View.VISIBLE){
+            return mDoodleView.onTouchEvent(event);
+        }
+       return true;
     }
 
     @Override
@@ -73,8 +76,16 @@ public class WhiteBoardActivity extends AppCompatActivity {
             case R.id.reset_bt:
                 mDoodleView.back();
                 break;
+            case R.id.add_pdf:
+                addPdf();
+                break;
         }
         return true;
+    }
+
+    private void addPdf() {
+        mDoodleView.transColor();
+        binding.pdfView.loadPdf("file:///android_assets/aabb.pdf");
     }
 
     /**

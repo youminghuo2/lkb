@@ -29,4 +29,8 @@
         android:id="@+id/reset_bt"
         android:title="@string/reset"></item>
 
+    <item
+        android:id="@+id/add_pdf"
+        android:title="加载pdf"/>
+
 </menu>
