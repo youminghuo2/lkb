@@ -34,6 +34,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
 
         binding.doodleDoodleview.setSize(dip2px(5));
 
+        binding.pdfView.getDoodleView(binding.doodleDoodleview);
     }
 
     @Override

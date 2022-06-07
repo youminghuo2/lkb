@@ -41,9 +41,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'androidx.work:work-runtime:2.7.1'
     implementation 'com.guolindev.permissionx:permissionx:1.6.4'
-     implementation project(':pdfview')
+//     implementation project(':pdfview')
 //    implementation 'com.github.GitHubZJY:AndroidPdfHelper:v1.0.0'
 
     implementation 'com.blankj:utilcodex:1.31.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
 
 }
