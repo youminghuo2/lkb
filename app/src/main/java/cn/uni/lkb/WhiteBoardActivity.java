@@ -16,12 +16,15 @@ import cn.uni.lkb.databinding.ActivityWhiteBoardBinding;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
+
 public class WhiteBoardActivity extends AppCompatActivity {
     private DoodleView mDoodleView;
     private AlertDialog mColorDialog;
     private AlertDialog mPaintDialog;
     private AlertDialog mShapeDialog;
     private ActivityWhiteBoardBinding binding;
+    private int Pen = 1;
+    private int Eraser = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.main_color:
+                mDoodleView.setMode(Pen);
                 showColorDialog();
                 break;
             case R.id.main_size:
@@ -72,7 +76,8 @@ public class WhiteBoardActivity extends AppCompatActivity {
                 Toast.makeText(this, "保存图片的路径为：" + path,  Toast.LENGTH_SHORT).show();
                 break;
             case R.id.rubber_bt:
-                mDoodleView.setColor("#ffffff");
+//                mDoodleView.setColor("#ffffff");
+                mDoodleView.setMode(Eraser);
                 break;
             case R.id.reset_bt:
                 mDoodleView.back();

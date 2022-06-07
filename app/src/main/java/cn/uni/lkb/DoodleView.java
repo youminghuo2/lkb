@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.util.AttributeSet;
@@ -40,6 +41,9 @@ public class DoodleView extends View {
 
     private Paint mPaint;
 
+    //橡皮擦画笔
+    private Paint mEraserPaint;
+
     private List<BaseAction> mBaseActions;
 
     private Bitmap mBitmap;
@@ -47,6 +51,10 @@ public class DoodleView extends View {
     private ActionType mActionType = ActionType.Path;
 
     private Canvas canvas;
+
+    private int mMode = 1;
+    private int Pen = 1;
+    private int Eraser = 2;
 
     public DoodleView(Context context) {
         super(context);
@@ -70,8 +78,21 @@ public class DoodleView extends View {
         mPaint.setAntiAlias(true);//抗锯齿
         mPaint.setStrokeWidth(currentSize);
 
+        mEraserPaint = new Paint();
+        mEraserPaint.setAlpha(0);
+        mEraserPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+        mEraserPaint.setAntiAlias(true);
+        mEraserPaint.setDither(true);
+        mEraserPaint.setStyle(Paint.Style.STROKE);
+        mEraserPaint.setStrokeJoin(Paint.Join.ROUND);
+        mEraserPaint.setStrokeWidth(30);
+
         mBaseActions = new ArrayList<>();
         initBackground();
+    }
+
+    public void setMode(int mode){
+        this.mMode = mode;
     }
 
  public void initBackground(){
@@ -108,12 +129,13 @@ public class DoodleView extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                for (BaseAction baseAction : mBaseActions) {
-                    baseAction.draw(canvas);
-                }
-                curAction.move(touchX, touchY);
-                curAction.draw(canvas);
-               invalidate();
+                    for (BaseAction baseAction : mBaseActions) {
+                        baseAction.draw(canvas);
+                    }
+                    curAction.move(touchX, touchY);
+                    curAction.draw(canvas);
+                    invalidate();
+
                 break;
             case MotionEvent.ACTION_UP:
                 mBaseActions.add(curAction);
@@ -141,25 +163,25 @@ public class DoodleView extends View {
     private void setCurAction(float x, float y) {
         switch (mActionType) {
             case Point:
-                curAction = new MyPoint(x, y, currentColor);
+                curAction = new MyPoint(x, y, currentColor,mMode);
                 break;
             case Path:
-                curAction = new MyPath(x, y, currentSize, currentColor);
+                curAction = new MyPath(x, y, currentSize, currentColor,mMode);
                 break;
             case Line:
-                curAction = new MyLine(x, y, currentSize, currentColor);
+                curAction = new MyLine(x, y, currentSize, currentColor,mMode);
                 break;
             case Rect:
-                curAction = new MyRect(x, y, currentSize, currentColor);
+                curAction = new MyRect(x, y, currentSize, currentColor,mMode);
                 break;
             case Circle:
-                curAction = new MyCircle(x, y, currentSize, currentColor);
+                curAction = new MyCircle(x, y, currentSize, currentColor,mMode);
                 break;
             case FillEcRect:
-                curAction = new MyFillRect(x, y, currentSize, currentColor);
+                curAction = new MyFillRect(x, y, currentSize, currentColor,mMode);
                 break;
             case FilledCircle:
-                curAction = new MyFillCircle(x, y, currentSize, currentColor);
+                curAction = new MyFillCircle(x, y, currentSize, currentColor,mMode);
                 break;
             default:
                 break;
@@ -253,7 +275,11 @@ public class DoodleView extends View {
         for (BaseAction action : mBaseActions) {
             action.draw(canvas);
         }
-        canvas.drawBitmap(mBitmap, 0, 0, mPaint);
+        if (mMode==Pen){
+            canvas.drawBitmap(mBitmap,0,0,mPaint);
+        }else {
+            canvas.drawBitmap(mBitmap,0,0,mEraserPaint);
+        }
     }
 
 

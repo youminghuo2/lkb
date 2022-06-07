@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 
 /**
  * @Package cn.uni.lkb
@@ -29,17 +31,22 @@ abstract class BaseAction {
   class MyPoint extends BaseAction {
       private float x;
       private float y;
+      private int mMode;
 
-      MyPoint(float px, float py, int color) {
+      MyPoint(float px, float py, int color,int mMode) {
           super(color);
           this.x = px;
           this.y = py;
+          this.mMode=mMode;
       }
 
       @Override
       public void draw(Canvas canvas) {
           Paint paint = new Paint();
           paint.setColor(color);
+          if (mMode==2){
+              paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+          }
           canvas.drawPoint(x, y, paint);
       }
 
@@ -55,16 +62,18 @@ abstract class BaseAction {
       class MyPath extends BaseAction {
           private Path path;
           private int size;
+          private int mMode=2;
 
           MyPath() {
               path = new Path();
               size = 1;
           }
 
-          MyPath(float x, float y, int size, int color) {
+          MyPath(float x, float y, int size, int color,int mMode) {
               super(color);
               this.path = new Path();
               this.size = size;
+              this.mMode=mMode;
               path.moveTo(x, y);
               path.lineTo(x, y);
           }
@@ -74,11 +83,16 @@ abstract class BaseAction {
               Paint paint = new Paint();
               paint.setAntiAlias(true);
               paint.setDither(true);
-              paint.setColor(color);
               paint.setStrokeWidth(size);
               paint.setStyle(Paint.Style.STROKE);
               paint.setStrokeJoin(Paint.Join.ROUND);
               paint.setStrokeCap(Paint.Cap.ROUND);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+                  paint.setAlpha(0);
+              }else {
+                  paint.setColor(color);
+              }
               canvas.drawPath(path, paint);
           }
 
@@ -97,6 +111,7 @@ abstract class BaseAction {
           private float stopX;
           private float stopY;
           private int size;
+          private int mMode;
 
           MyLine() {
               startX = 0;
@@ -105,13 +120,14 @@ abstract class BaseAction {
               stopY = 0;
           }
 
-          MyLine(float x, float y, int size, int color) {
+          MyLine(float x, float y, int size, int color,int mMode) {
               super(color);
               this.startX = x;
               this.startY = y;
               stopX = x;
               stopY = y;
               this.size = size;
+              this.mMode=mMode;
           }
 
           @Override
@@ -121,6 +137,9 @@ abstract class BaseAction {
               paint.setStyle(Paint.Style.STROKE);
               paint.setColor(color);
               paint.setStrokeWidth(size);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+              }
               canvas.drawLine(startX, startY, stopX, stopY, paint);
           }
 
@@ -140,6 +159,7 @@ abstract class BaseAction {
           private float stopX;
           private float stopY;
           private int size;
+          private int mMode;
 
           MyRect() {
               this.startX = 0;
@@ -148,13 +168,14 @@ abstract class BaseAction {
               this.stopY = 0;
           }
 
-          MyRect(float x, float y, int size, int color) {
+          MyRect(float x, float y, int size, int color,int mMode) {
               super(color);
               this.startX = x;
               this.startY = y;
               this.stopX = x;
               this.stopY = y;
               this.size = size;
+              this.mMode=mMode;
           }
 
           @Override
@@ -164,6 +185,9 @@ abstract class BaseAction {
               paint.setStyle(Paint.Style.STROKE);
               paint.setColor(color);
               paint.setStrokeWidth(size);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+              }
               canvas.drawRect(startX, startY, stopX, stopY, paint);
           }
 
@@ -184,6 +208,7 @@ abstract class BaseAction {
           private float stopY;
           private float radius;
           private int size;
+          private int mMode;
 
           MyCircle() {
               startX = 0;
@@ -193,7 +218,7 @@ abstract class BaseAction {
               radius = 0;
           }
 
-          MyCircle(float x, float y, int size, int color) {
+          MyCircle(float x, float y, int size, int color,int mMode) {
               super(color);
               this.startX = x;
               this.startY = y;
@@ -201,6 +226,7 @@ abstract class BaseAction {
               this.stopY = y;
               this.radius = 0;
               this.size = size;
+              this.mMode=mMode;
           }
 
           @Override
@@ -210,6 +236,9 @@ abstract class BaseAction {
               paint.setStyle(Paint.Style.STROKE);
               paint.setColor(color);
               paint.setStrokeWidth(size);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+              }
               canvas.drawCircle((startX + stopX) / 2, (startY + stopY) / 2, radius, paint);
           }
 
@@ -228,6 +257,7 @@ abstract class BaseAction {
           private float stopX;
           private float stopY;
           private int size;
+          private int mMode;
 
           MyFillRect() {
               this.startX = 0;
@@ -236,13 +266,14 @@ abstract class BaseAction {
               this.stopY = 0;
           }
 
-          MyFillRect(float x, float y, int size, int color) {
+          MyFillRect(float x, float y, int size, int color,int mMode) {
               super(color);
               this.startX = x;
               this.startY = y;
               this.stopX = x;
               this.stopY = y;
               this.size = size;
+              this.mMode=mMode;
           }
 
           @Override
@@ -252,6 +283,9 @@ abstract class BaseAction {
               paint.setStyle(Paint.Style.FILL);
               paint.setColor(color);
               paint.setStrokeWidth(size);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+              }
               canvas.drawRect(startX, startY, stopX, stopY, paint);
           }
 
@@ -272,9 +306,9 @@ abstract class BaseAction {
           private float stopY;
           private float radius;
           private int size;
+          private int mMode;
 
-
-          public MyFillCircle(float x, float y, int size, int color) {
+          public MyFillCircle(float x, float y, int size, int color,int mMode) {
               super(color);
               this.startX = x;
               this.startY = y;
@@ -282,6 +316,7 @@ abstract class BaseAction {
               this.stopY = y;
               this.radius = 0;
               this.size = size;
+              this.mMode=mMode;
           }
 
           @Override
@@ -291,6 +326,9 @@ abstract class BaseAction {
               paint.setStyle(Paint.Style.FILL);
               paint.setColor(color);
               paint.setStrokeWidth(size);
+              if (mMode==2){
+                  paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+              }
               canvas.drawCircle((startX + stopX) / 2, (startY + stopY) / 2, radius, paint);
           }
 
