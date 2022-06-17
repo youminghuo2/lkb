@@ -34,10 +34,10 @@ public class WhiteBoardActivity extends AppCompatActivity {
         setContentView(view);
         mDoodleView=binding.doodleDoodleview;
 
-
         binding.doodleDoodleview.setSize(dip2px(5));
 
         binding.pdfView.getDoodleView(binding.doodleDoodleview);
+        binding.pdfView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -83,7 +83,13 @@ public class WhiteBoardActivity extends AppCompatActivity {
                 mDoodleView.back();
                 break;
             case R.id.add_pdf:
+                mDoodleView.reset();
+                binding.pdfView.setVisibility(View.VISIBLE);
                 addPdf();
+                break;
+            case R.id.add_white:
+                mDoodleView.reset();
+                binding.pdfView.setVisibility(View.INVISIBLE);
                 break;
         }
         return true;

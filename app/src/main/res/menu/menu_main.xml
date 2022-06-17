@@ -33,4 +33,8 @@
         android:id="@+id/add_pdf"
         android:title="加载pdf"/>
 
+    <item
+        android:id="@+id/add_white"
+        android:title="新建白板"/>
+
 </menu>

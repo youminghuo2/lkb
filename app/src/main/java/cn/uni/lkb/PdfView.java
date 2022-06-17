@@ -401,4 +401,12 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
             }
         }
     }
+
+    public void showMenuBar(boolean i){
+        if (i){
+            controllerContainer.setVisibility(VISIBLE);
+        }else {
+            controllerContainer.setVisibility(GONE);
+        }
+    }
 }

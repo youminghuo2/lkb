@@ -192,7 +192,7 @@ public class ScreenRecorderService extends Service {
                 break;
         }
 
-        String AudioEncoding=MMKVTools.getInstance().getString("AudioEncoding","default");
+        String AudioEncoding=MMKVTools.getInstance().getString("AudioEncoding","AMR_NB");
         switch (AudioEncoding) {
             case "default":
                 //设置音频编码
