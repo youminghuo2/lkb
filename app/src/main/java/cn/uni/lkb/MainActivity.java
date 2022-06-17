@@ -13,9 +13,17 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.lzf.easyfloat.EasyFloat;
+import com.lzf.easyfloat.anim.DefaultAnimator;
+import com.lzf.easyfloat.enums.ShowPattern;
+import com.lzf.easyfloat.enums.SidePattern;
+import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         scope.showRequestReasonDialog(deniedList, "即将申请的权限是程序必须依赖的权限", "我已明白");
                     }
                 })
+                .explainReasonBeforeRequest()
                 .onForwardToSettings(new ForwardToSettingsCallback() {
                     @Override
                     public void onForwardToSettings(@NonNull ForwardScope scope, @NonNull List<String> deniedList) {
@@ -80,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
     }
 
 
@@ -87,14 +97,38 @@ public class MainActivity extends AppCompatActivity {
         binding.startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(screenRecordService != null && screenRecordService.isRunning()){
-                    Toast.makeText(MainActivity.this,"当前正在录屏，请不要重复点击哦！",Toast.LENGTH_SHORT).show();
-                } else if(screenRecordService != null && !screenRecordService.isRunning()){
-                    //没有录制，就开始录制，弹出提示，返回主界面开始录制
-                    screenRecordService.startRecord();
-                } else if(screenRecordService == null){
-                    connectService();
-                }
+
+                PermissionX.init(MainActivity.this)
+                        .permissions(Manifest.permission.SYSTEM_ALERT_WINDOW)
+                        .onExplainRequestReason(new ExplainReasonCallback() {
+                            @Override
+                            public void onExplainReason(@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+                                scope.showRequestReasonDialog(deniedList,"不授予悬浮权限，可能导致视频录制无法在桌面上进行保存，建议授权","确定","取消");
+                            }
+                        })
+                        .explainReasonBeforeRequest()
+                        .request(new RequestCallback() {
+                            @Override
+                            public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                                if (allGranted) {
+                                    Toast.makeText(MainActivity.this, "授权成功,开始录制", Toast.LENGTH_SHORT).show();
+                                    initEasyFloat();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "授权失败，开始录制" + deniedList, Toast.LENGTH_SHORT).show();
+                                }
+//                                screenRecordService.startRecord();
+                            }
+                        });
+
+
+
+//                if(screenRecordService != null && screenRecordService.isRunning()){
+//                    Toast.makeText(MainActivity.this,"当前正在录屏，请不要重复点击哦！",Toast.LENGTH_SHORT).show();
+//                } else if(screenRecordService != null && !screenRecordService.isRunning()){
+//                    //没有录制，就开始录制，弹出提示，返回主界面开始录制
+//                } else if(screenRecordService == null){
+//                    connectService();
+//                }
             }
         });
 
@@ -125,6 +159,59 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void initEasyFloat() {
+        EasyFloat.with(this)
+                .setLayout(R.layout.dialog_round)
+                .setShowPattern(ShowPattern.ALL_TIME)
+                .setSidePattern(SidePattern.TOP)
+                .setDragEnable(true)
+                .setAnimator(new DefaultAnimator())
+                .registerCallbacks(new OnFloatCallbacks() {
+                    @Override
+                    public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
+
+                    }
+
+                    @Override
+                    public void show(@NonNull View view) {
+                        Glide.with(MainActivity.this).asGif().load(R.drawable.red_round).into((ImageView) view.findViewById(R.id.red_img));
+                    }
+
+                    @Override
+                    public void hide(@NonNull View view) {
+
+                    }
+
+                    @Override
+                    public void dismiss() {
+
+                    }
+
+                    @Override
+                    public void touchEvent(@NonNull View view, @NonNull MotionEvent motionEvent) {
+                        view.findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                screenRecordService.stopRecord();
+                                Toast.makeText(MainActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                                EasyFloat.dismiss();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void drag(@NonNull View view, @NonNull MotionEvent motionEvent) {
+
+                    }
+
+                    @Override
+                    public void dragEnd(@NonNull View view) {
+
+                    }
+                })
+                .show();
     }
 
     private void connectService() {
