@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lkb.iml" filepath="$PROJECT_DIR$/.idea/modules/lkb.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/lkb.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/lkb.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pdfview/lkb.pdfview.iml" filepath="$PROJECT_DIR$/.idea/modules/pdfview/lkb.pdfview.iml" />
     </modules>
   </component>
 </project>

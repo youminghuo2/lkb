@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.os.Binder;
@@ -24,6 +25,8 @@ import androidx.core.app.NotificationCompat;
 import java.io.File;
 import java.io.IOException;
 
+import cn.uni.lkb.utils.MMKVTools;
+
 public class ScreenRecorderService extends Service {
     private MediaProjection mediaProjection;
     private MediaRecorder mediaRecorder;
@@ -33,14 +36,14 @@ public class ScreenRecorderService extends Service {
     private int height;
     private int dpi;
 
-    private String videoPath="";
+    private String videoPath = "";
 
     //标志，判断是否正在录屏
     private boolean running;
 
-    private final String NOTIFICATION_CHANNEL_ID="cn.uni.lkb.ScreenRecordService";
-    private final String NOTIFICATION_CHANNEL_NAME="cn.uni.lkb";
-    private final String NOTIFICATION_CHANNEL_DESC="cn.uni.lkb.channel_desc";
+    private final String NOTIFICATION_CHANNEL_ID = "cn.uni.lkb.ScreenRecordService";
+    private final String NOTIFICATION_CHANNEL_NAME = "cn.uni.lkb";
+    private final String NOTIFICATION_CHANNEL_DESC = "cn.uni.lkb.channel_desc";
 
 
     @Override
@@ -49,10 +52,10 @@ public class ScreenRecorderService extends Service {
         startNotification();
     }
 
-    public void startNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+    public void startNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Intent notificationIntent = new Intent(this, ScreenRecorderService.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,  PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -84,8 +87,8 @@ public class ScreenRecorderService extends Service {
         return super.onUnbind(intent);
     }
 
-    public class ScreenRecordBinder extends Binder{
-        public ScreenRecorderService getScreenRecordService(){
+    public class ScreenRecordBinder extends Binder {
+        public ScreenRecorderService getScreenRecordService() {
             return ScreenRecorderService.this;
         }
     }
@@ -97,12 +100,12 @@ public class ScreenRecorderService extends Service {
     }
 
     //设置录屏工具MediaProjection
-    public void setMediaProjection(MediaProjection projection){
-        mediaProjection=projection;
+    public void setMediaProjection(MediaProjection projection) {
+        mediaProjection = projection;
     }
 
     //设置需要录制的屏幕参数
-    public void setConfig(int width,int height,int dpi){
+    public void setConfig(int width, int height, int dpi) {
         this.width = width;
         this.height = height;
         this.dpi = dpi;
@@ -114,7 +117,7 @@ public class ScreenRecorderService extends Service {
     }
 
     //开始录屏
-    public boolean startRecord(){
+    public boolean startRecord() {
         //首先判断是否有录屏工具以及是否在录屏
         if (mediaProjection == null || running) {
             return false;
@@ -126,19 +129,19 @@ public class ScreenRecorderService extends Service {
 
         try {
             mediaRecorder.start();
-            running=true;
+            running = true;
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this,"开启失败,没有开始录屏",Toast.LENGTH_LONG).show();
-            running=false;
+            Toast.makeText(this, "开启失败,没有开始录屏", Toast.LENGTH_LONG).show();
+            running = false;
             return false;
         }
     }
 
     //停止录屏
-    public boolean stopRecord(){
-        if (!running){
+    public boolean stopRecord() {
+        if (!running) {
             //没有录屏，无法停止
             return false;
         }
@@ -148,17 +151,17 @@ public class ScreenRecorderService extends Service {
             mediaRecorder.stop();
             mediaRecorder.reset();
             virtualDisplay.release();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this,"录屏出现异常，视频保存失败！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "录屏出现异常，视频保存失败！", Toast.LENGTH_SHORT).show();
             return false;
         }
         //无异常，保存成功
-        Toast.makeText(this,"录屏结束，保存成功！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "录屏结束，保存成功！", Toast.LENGTH_SHORT).show();
         return true;
     }
 
-    public void initRecord(){
+    public void initRecord() {
         //新建Recorder
         mediaRecorder = new MediaRecorder();
         //设置录像机的一系列参数
@@ -172,15 +175,52 @@ public class ScreenRecorderService extends Service {
         videoPath = getSaveDirectory() + System.currentTimeMillis() + ".mp4";
         //保存在该位置
         mediaRecorder.setOutputFile(videoPath);
-        //设置视频大小，清晰度
-        mediaRecorder.setVideoSize(width, height);
-        //设置视频编码为H.264
-        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        //设置音频编码
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        //设置视频大小
+        mediaRecorder.setVideoSize(720, 1480);
+
+        String VideoEncoding = MMKVTools.getInstance().getString("VideoEncoding", "H264");
+        switch (VideoEncoding) {
+            case "H264":
+                //设置视频编码为H.264
+                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+                break;
+            case "H263":
+                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
+                break;
+            case "MPEG_4":
+                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+                break;
+        }
+
+        String AudioEncoding=MMKVTools.getInstance().getString("AudioEncoding","default");
+        switch (AudioEncoding) {
+            case "default":
+                //设置音频编码
+                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+                break;
+            case "AMR_NB":
+                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                break;
+            case "AAC":
+                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                break;
+        }
+
+        String frameRate=MMKVTools.getInstance().getString("frameRate","rate_15");
+        switch (frameRate) {
+            case "rate_15":
+                mediaRecorder.setVideoFrameRate(15);
+                break;
+            case "rate_20":
+                mediaRecorder.setVideoFrameRate(20);
+                break;
+            case "rate_25":
+                mediaRecorder.setVideoFrameRate(25);
+                break;
+        }
+
         //设置视频码率
         mediaRecorder.setVideoEncodingBitRate(2 * 1920 * 1080);
-        mediaRecorder.setVideoFrameRate(18);
 
         try {
             mediaRecorder.prepare();
@@ -197,10 +237,10 @@ public class ScreenRecorderService extends Service {
         try {
             virtualDisplay = mediaProjection.createVirtualDisplay("VirtualScreen", width, height, dpi,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder.getSurface(), null, null);
-        }catch (Exception e){
+        } catch (Exception e) {
 
             e.printStackTrace();
-            Toast.makeText(this,"virtualDisplay创建录屏异常，请退出重试！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "virtualDisplay创建录屏异常，请退出重试！", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -118,6 +118,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,WhiteBoardActivity.class));
             }
         });
+
+        binding.settingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     private void connectService() {
