@@ -176,7 +176,7 @@ public class ScreenRecorderService extends Service {
         //保存在该位置
         mediaRecorder.setOutputFile(videoPath);
         //设置视频大小
-        mediaRecorder.setVideoSize(720, 1480);
+        mediaRecorder.setVideoSize(width, height);
 
         String VideoEncoding = MMKVTools.getInstance().getString("VideoEncoding", "H264");
         switch (VideoEncoding) {

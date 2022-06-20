@@ -11,11 +11,17 @@ import android.content.ServiceConnection;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     ScreenRecorderService screenRecordService;
     //请求码
     private final static int REQUEST_CODE = 101;
+    private TextView tv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
         PermissionX.init(this)
                 .permissions(Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .onExplainRequestReason(new ExplainReasonCallback() {
                     @Override
                     public void onExplainReason(@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
@@ -111,24 +118,21 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
                                 if (allGranted) {
-                                    Toast.makeText(MainActivity.this, "授权成功,开始录制", Toast.LENGTH_SHORT).show();
-                                    initEasyFloat();
+                                    if(screenRecordService != null && screenRecordService.isRunning()){
+                                        Toast.makeText(MainActivity.this,"当前正在录屏，请不要重复点击哦！",Toast.LENGTH_SHORT).show();
+                                    } else if(screenRecordService != null && !screenRecordService.isRunning()){
+                                        //没有录制，就开始录制，弹出提示，返回主界面开始录制
+                                        Toast.makeText(MainActivity.this, "授权成功,开始录制", Toast.LENGTH_SHORT).show();
+                                        initEasyFloat();
+                                    } else if(screenRecordService == null){
+                                        connectService();
+                                    }
                                 } else {
                                     Toast.makeText(MainActivity.this, "授权失败，开始录制" + deniedList, Toast.LENGTH_SHORT).show();
                                 }
-//                                screenRecordService.startRecord();
+
                             }
                         });
-
-
-
-//                if(screenRecordService != null && screenRecordService.isRunning()){
-//                    Toast.makeText(MainActivity.this,"当前正在录屏，请不要重复点击哦！",Toast.LENGTH_SHORT).show();
-//                } else if(screenRecordService != null && !screenRecordService.isRunning()){
-//                    //没有录制，就开始录制，弹出提示，返回主界面开始录制
-//                } else if(screenRecordService == null){
-//                    connectService();
-//                }
             }
         });
 
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         binding.settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+               startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
     }
@@ -167,16 +171,30 @@ public class MainActivity extends AppCompatActivity {
                 .setShowPattern(ShowPattern.ALL_TIME)
                 .setSidePattern(SidePattern.TOP)
                 .setDragEnable(true)
+                .setGravity(Gravity.CENTER_HORIZONTAL)
                 .setAnimator(new DefaultAnimator())
                 .registerCallbacks(new OnFloatCallbacks() {
                     @Override
                     public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
+                        if (b){
+                            if (view != null) {
+                                Glide.with(MainActivity.this).asGif().load(R.drawable.red_round).into((ImageView) view.findViewById(R.id.red_img));
+                                screenRecordService.startRecord();
+
+                                Chronometer time_tv = (view.findViewById(R.id.time_tv));
+                                time_tv.setBase(SystemClock.elapsedRealtime());
+                                int hour = (int) ((SystemClock.elapsedRealtime() - time_tv.getBase()) / 1000 / 60);
+                                time_tv.setFormat("0"+String.valueOf(hour)+":%s");
+                                time_tv.start();
+
+                            }
+                        }
 
                     }
 
                     @Override
                     public void show(@NonNull View view) {
-                        Glide.with(MainActivity.this).asGif().load(R.drawable.red_round).into((ImageView) view.findViewById(R.id.red_img));
+
                     }
 
                     @Override
@@ -191,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void touchEvent(@NonNull View view, @NonNull MotionEvent motionEvent) {
-                        view.findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
+                        view.findViewById(R.id.pause_img).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 screenRecordService.stopRecord();
@@ -270,4 +288,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(serviceConnection);
     }
+
+
+
 }
