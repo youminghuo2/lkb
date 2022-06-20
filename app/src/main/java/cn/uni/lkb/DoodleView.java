@@ -304,13 +304,21 @@ public class DoodleView extends View {
      * 重置签名
      */
     public void reset(){
-        if(mBaseActions != null && mBaseActions.size() > 0){
+//        if(mBaseActions != null && mBaseActions.size() > 0){
             mBaseActions.clear();
 //            canvas.drawColor(Color.WHITE);
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             for (BaseAction action : mBaseActions) {
                 action.draw(canvas);
             }
+//        }
+    }
+
+    public boolean canReset(){
+        if (mBaseActions!=null && mBaseActions.size()>0){
+            return true;
+        }else {
+            return false;
         }
     }
 

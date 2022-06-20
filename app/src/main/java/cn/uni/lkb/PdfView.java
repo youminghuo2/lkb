@@ -76,6 +76,7 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
     private String pdfUrl;
 
     private List<Bitmap> pageList;
+    private List<Bitmap> old_pageList;
 
     private PdfRenderer pdfRenderer;
     private PdfRenderer.Page curPdfPage;
@@ -155,6 +156,7 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
         });
 
         pageList = new ArrayList<>();
+        old_pageList=new ArrayList<>();
         pageAdapter = new PdfPageAdapter(getContext(), pageList);
         contentRv.setAdapter(pageAdapter);
 
@@ -191,6 +193,12 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
             }
         }
     }
+
+    public void clearPageOnePdf(){
+        pageList.set(currentIndex,old_pageList.get(currentIndex));
+        pageAdapter.notifyItemChanged(currentIndex);
+    }
+
 
     public void setPDFController(AbsControllerBar controller) {
         if (controllerContainer == null || controller == null) {
@@ -339,6 +347,7 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
                 pdfRenderer = new PdfRenderer(getFileDescriptor());
                 pageCount = pdfRenderer.getPageCount();
                 pageList.clear();
+                old_pageList.clear();
                 for (int i=0; i<pageCount; i++) {
                     PdfRenderer.Page item = pdfRenderer.openPage(i);
                     curPdfPage = item;
@@ -348,6 +357,7 @@ public class PdfView extends FrameLayout implements IDownloadCallback, IPDFContr
                     item.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
                     item.close();
                     pageList.add(bitmap);
+                    old_pageList.add(bitmap);
                 }
                 hasRenderFinish = true;
                 return true;

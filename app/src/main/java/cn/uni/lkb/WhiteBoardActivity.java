@@ -68,7 +68,13 @@ public class WhiteBoardActivity extends AppCompatActivity {
                 showShapeDialog();
                 break;
             case R.id.main_reset:
-                mDoodleView.reset();
+                if (mDoodleView.canReset()){
+                    mDoodleView.reset();
+                }else {
+                  if (binding.pdfView.getVisibility()==View.VISIBLE){
+                      binding.pdfView.clearPageOnePdf();
+                  }
+                }
                 break;
             case R.id.main_save:
                 String path = mDoodleView.saveBitmap(mDoodleView);
