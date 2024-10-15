@@ -171,57 +171,62 @@ public class ScreenRecorderService extends Service {
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         //设置视频格式为mp4
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        //设置视频存储地址，返回的文件夹下的命名为当前系统事件的文件
-        videoPath = getSaveDirectory() + System.currentTimeMillis() + ".mp4";
         //保存在该位置
         mediaRecorder.setOutputFile(videoPath);
         //设置视频大小
         mediaRecorder.setVideoSize(width, height);
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        //设置视频存储地址，返回的文件夹下的命名为当前系统事件的文件
 
-        String VideoEncoding = MMKVTools.getInstance().getString("VideoEncoding", "H264");
-        switch (VideoEncoding) {
-            case "H264":
-                //设置视频编码为H.264
-                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-                break;
-            case "H263":
-                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
-                break;
-            case "MPEG_4":
-                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-                break;
-        }
+        File externalFilesDir = getExternalFilesDir(null);
 
-        String AudioEncoding=MMKVTools.getInstance().getString("AudioEncoding","AMR_NB");
-        switch (AudioEncoding) {
-            case "default":
-                //设置音频编码
-                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-                break;
-            case "AMR_NB":
-                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                break;
-            case "AAC":
-                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                break;
-        }
-
-        String frameRate=MMKVTools.getInstance().getString("frameRate","rate_15");
-        switch (frameRate) {
-            case "rate_15":
-                mediaRecorder.setVideoFrameRate(15);
-                break;
-            case "rate_20":
-                mediaRecorder.setVideoFrameRate(20);
-                break;
-            case "rate_25":
-                mediaRecorder.setVideoFrameRate(25);
-                break;
-        }
+        File outputFile = new File(externalFilesDir,  System.currentTimeMillis() +"screen_recording.mp4");
+        mediaRecorder.setOutputFile(outputFile.getAbsolutePath());
+//        String VideoEncoding = MMKVTools.getInstance().getString("VideoEncoding", "H264");
+//        switch (VideoEncoding) {
+//            case "H264":
+//                //设置视频编码为H.264
+//                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+//                break;
+//            case "H263":
+//                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
+//                break;
+//            case "MPEG_4":
+//                mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+//                break;
+//        }
+//
+//        String AudioEncoding=MMKVTools.getInstance().getString("AudioEncoding","AMR_NB");
+//        switch (AudioEncoding) {
+//            case "default":
+//                //设置音频编码
+//                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+//                break;
+//            case "AMR_NB":
+//                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//                break;
+//            case "AAC":
+//                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+//                break;
+//        }
+//
+//        String frameRate=MMKVTools.getInstance().getString("frameRate","rate_15");
+//        switch (frameRate) {
+//            case "rate_15":
+//                mediaRecorder.setVideoFrameRate(15);
+//                break;
+//            case "rate_20":
+//                mediaRecorder.setVideoFrameRate(20);
+//                break;
+//            case "rate_25":
+//                mediaRecorder.setVideoFrameRate(25);
+//                break;
+//        }
 
         //设置视频码率
         mediaRecorder.setVideoEncodingBitRate(2 * 1920 * 1080);
-
+        mediaRecorder.setVideoFrameRate(25);
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {
